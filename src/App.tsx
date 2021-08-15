@@ -6,9 +6,13 @@ const baseUrl = 'https://pc1i9r5jx6.execute-api.eu-north-1.amazonaws.com';
 
 function uploadImage(imageData: string | ArrayBuffer | null) {
   return fetch(`${baseUrl}/upload-url`)
-    .then(response => response.json())
+    .then(response => {
+      if (response.status !== 200) {
+        throw new Error('Could not retrieve presigned URL for uploading the image.');
+      }
+      return response.json();
+    })
     .then(data => {
-      console.log(data);
       const formData = new FormData();
       const {fields} = data;
       for (const name in fields) {
@@ -16,30 +20,33 @@ function uploadImage(imageData: string | ArrayBuffer | null) {
       }
       // @ts-ignore
       formData.append('file', new Blob([imageData]));
-      console.log('Form data:', formData);
       return fetch(data.url, {
         method: 'POST',
         mode: 'cors',
         body: formData,
-      }).then(() => fields.key);
+      }).then(response => {
+        if (response.status !== 204) {
+          throw new Error(`Could not upload image (status ${response.status}).`);
+        }
+        return fields.key;
+      });
     })
 }
 
 function downloadImage(key: string) {
-  console.log('Fetching download URL for image with key', key);
   return fetch(`${baseUrl}/download-url/${key}`)
-    .then(response => response.json())
-    .then(({url}) => {
-      console.log("Got download URL:", url);
-      return fetch(url);
-    })
     .then(response => {
-      console.log("Download response:", response);
-      return response.arrayBuffer();
+      if (response.status !== 200) {
+        throw new Error('Could not retrieve URL for downloading the image.');
+      }
+      return response.json();
     })
-    .then(data => {
-      console.log("Image downloaded:", data);
-      return data;
+    .then(({url}) => fetch(url))
+    .then(response => {
+      if (response.status !== 200) {
+        throw new Error(`Image optimization failed (status ${response.status})`);
+      }
+      return response.arrayBuffer();
     });
 }
 
@@ -59,18 +66,13 @@ function Dropzone() {
       };
       reader.onerror = reader.onabort;
       reader.onload = () => {
-        const binaryStr = reader.result;
-        console.log(binaryStr);
-        if (binaryStr instanceof ArrayBuffer) {
-          setOriginalSize(binaryStr.byteLength);
+        const data = reader.result;
+        if (data instanceof ArrayBuffer) {
+          setOriginalSize(data.byteLength);
         }
-        uploadImage(binaryStr)
-          .then(key => {
-            console.log('Image uploaded with key', key);
-            return downloadImage(key);
-          })
-          .then((value) => {
-            console.log("Value:", value);
+        uploadImage(data)
+          .then(downloadImage)
+          .then(value => {
             // @ts-ignore
             const url = URL.createObjectURL(
               // @ts-ignore
@@ -83,6 +85,11 @@ function Dropzone() {
             document.getElementById('download-button').href = url;
             setLoading(false);
             setOptimized(true);
+          })
+          .catch((error) => {
+            console.error('An error occurred while processing image:', error)
+            setLoading(false);
+            setOptimized(false);
           });
       }
       reader.readAsArrayBuffer(file);
@@ -96,7 +103,7 @@ function Dropzone() {
       {isLoading ? <div className="loading"><Loader type="Bars" color="#00BFFF" height={80} width={80} /></div> : <Fragment/>}
       {
         isLoading
-          ? <Fragment/>
+          ? <div/>
           : <div {...getRootProps()} className="dropzone"><input {...getInputProps()} /><p>Drag & drop an image file here to shrink it.</p></div>
       }
       <div className={isOptimized ? "visible" : "hidden"}>
@@ -115,12 +122,12 @@ function Dropzone() {
 
 function App() {
   return (
-    <Fragment>
+    <div>
       <header className="App-header">
         <h1>Picopic!</h1>
       </header>
       <Dropzone />
-    </Fragment>
+    </div>
   );
 }
 
