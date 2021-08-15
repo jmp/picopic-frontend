@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+h1 {
+  text-transform: lowercase;
+}
+
+.Dropzone {
+  border: 2px dotted #999;
+  border-radius: 20pt;
+  padding: 10pt 20pt;
+  margin-bottom: 100pt;
+}
+
+#download-button {
+  color: white;
+}
