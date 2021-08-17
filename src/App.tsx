@@ -2,52 +2,64 @@ import React, {Fragment, useCallback, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import Loader from 'react-loader-spinner';
 
-const baseUrl = 'https://pc1i9r5jx6.execute-api.eu-north-1.amazonaws.com';
+const baseUrl = 'https://api.picopic.io';
 
-function uploadImage(imageData: string | ArrayBuffer | null) {
-  return fetch(`${baseUrl}/upload-url`)
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error('Could not retrieve presigned URL for uploading the image.');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const formData = new FormData();
-      const {fields} = data;
-      for (const name in fields) {
-        formData.append(name, fields[name]);
-      }
-      // @ts-ignore
-      formData.append('file', new Blob([imageData]));
-      return fetch(data.url, {
-        method: 'POST',
-        mode: 'cors',
-        body: formData,
-      }).then(response => {
-        if (response.status !== 204) {
-          throw new Error(`Could not upload image (status ${response.status}).`);
-        }
-        return fields.key;
-      });
-    })
+async function uploadImage(imageData: ArrayBuffer) {
+  console.log('Uploading image.');
+  console.log('Fetching upload URL.');
+  const response = await fetch(`${baseUrl}/upload-url`, {mode: 'cors'});
+  if (response.status !== 200) {
+    throw new Error('Could not retrieve presigned URL for uploading the image.');
+  }
+  const {url, fields} = await response.json();
+  console.log('Received upload:', url);
+  const formData = constructFormData(imageData, fields);
+  await submitFormData(url, formData);
+  return fields.key;
 }
 
-function downloadImage(key: string) {
-  return fetch(`${baseUrl}/download-url/${key}`)
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error('Could not retrieve URL for downloading the image.');
-      }
-      return response.json();
-    })
-    .then(({url}) => fetch(url))
-    .then(response => {
-      if (response.status !== 200) {
-        throw new Error(`Image optimization failed (status ${response.status})`);
-      }
-      return response.arrayBuffer();
-    });
+function constructFormData(imageData: ArrayBuffer, fields: any): FormData {
+  console.log('Constructing form data.');
+  const formData = new FormData();
+  for (const name in fields) {
+    formData.append(name, fields[name]);
+  }
+  formData.append('file', new Blob([imageData]));
+  return formData;
+}
+
+async function submitFormData(url: string, body: FormData) {
+  console.log('Submitting form data.');
+  const {status} = await fetch(url, {method: 'POST', body, mode: 'cors'});
+  if (status !== 204) {
+    throw new Error(`Could not upload image (status ${status}).`);
+  }
+}
+
+async function fetchDownloadUrl(key: string) {
+  console.log('Fetching download URL.');
+  const response = await fetch(`${baseUrl}/download-url/${key}`, {mode: 'cors'})
+  if (response.status !== 200) {
+    throw new Error(`Could not retrieve download URL (status ${response.status}).`);
+  }
+  const {url} = await response.json();
+  return url;
+}
+
+async function downloadImage(key: string) {
+  console.log('Downloading image.');
+  const url = await fetchDownloadUrl(key);
+  const response = await fetch(url, {mode: 'cors'});
+  if (response.status !== 200) {
+    throw new Error(`Image optimization failed (status ${response.status}).`);
+  }
+  return await response.arrayBuffer();
+}
+
+async function processImage(imageData: ArrayBuffer) {
+  console.log('Processing image.');
+  const url = await uploadImage(imageData);
+  return await downloadImage(url);
 }
 
 function Dropzone() {
@@ -56,45 +68,46 @@ function Dropzone() {
   const [originalSize, setOriginalSize] = useState(0);
   const [optimizedSize, setOptimizedSize] = useState(0);
   const onDrop = useCallback((acceptedFiles) => {
+    console.log('File selected.');
     setLoading(true);
     setOptimized(false);
-    acceptedFiles.forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onabort = () => {
+    const file: File = acceptedFiles[0];
+    const reader = new FileReader();
+    reader.onabort = () => {
+      setLoading(false);
+      setOptimized(false);
+    };
+    reader.onerror = reader.onabort;
+    reader.onload = () => {
+      console.log('Loading started.');
+      const imageData = reader.result;
+      if (imageData instanceof ArrayBuffer) {
+        setOriginalSize(imageData.byteLength);
+      } else {
         setLoading(false);
         setOptimized(false);
-      };
-      reader.onerror = reader.onabort;
-      reader.onload = () => {
-        const data = reader.result;
-        if (data instanceof ArrayBuffer) {
-          setOriginalSize(data.byteLength);
-        }
-        uploadImage(data)
-          .then(downloadImage)
-          .then(value => {
-            // @ts-ignore
-            const url = URL.createObjectURL(
-              // @ts-ignore
-              new Blob([value], {type: 'image/png'})
-            );
-            setOptimizedSize(value.byteLength);
-            // @ts-ignore
-            document.getElementById('optimized-image').src = url;
-            // @ts-ignore
-            document.getElementById('download-button').href = url;
-            setLoading(false);
-            setOptimized(true);
-          })
-          .catch((error) => {
-            console.error('An error occurred while processing image:', error)
-            setLoading(false);
-            setOptimized(false);
-          });
+        console.error('Data is not an ArrayBuffer!');
+        return;
       }
-      reader.readAsArrayBuffer(file);
-    })
-
+      console.log('Starting image processing.');
+      processImage(imageData)
+        .then(optimizedData => {
+          const url = URL.createObjectURL(new Blob([optimizedData], {type: 'image/png'}));
+          setOptimizedSize(optimizedData.byteLength);
+          // @ts-ignore
+          document.getElementById('optimized-image').src = url;
+          // @ts-ignore
+          document.getElementById('download-button').href = url;
+          setLoading(false);
+          setOptimized(true);
+        })
+        .catch(error => {
+          console.error('An error occurred while processing image:', error)
+          setLoading(false);
+          setOptimized(false);
+        });
+    }
+    reader.readAsArrayBuffer(file);
   }, []);
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
