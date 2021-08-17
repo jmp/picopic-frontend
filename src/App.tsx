@@ -1,4 +1,4 @@
-import React, {Fragment, useCallback, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import Loader from 'react-loader-spinner';
 
@@ -63,11 +63,12 @@ async function processImage(imageData: ArrayBuffer) {
 }
 
 function Dropzone() {
+  const [downloadLink, setDownloadLink] = useState('/');
   const [isLoading, setLoading] = useState(false);
   const [isOptimized, setOptimized] = useState(false);
   const [originalSize, setOriginalSize] = useState(0);
   const [optimizedSize, setOptimizedSize] = useState(0);
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback(acceptedFiles => {
     console.log('File selected.');
     setLoading(true);
     setOptimized(false);
@@ -92,55 +93,77 @@ function Dropzone() {
       console.log('Starting image processing.');
       processImage(imageData)
         .then(optimizedData => {
-          const url = URL.createObjectURL(new Blob([optimizedData], {type: 'image/png'}));
+          const blob = new Blob([optimizedData], {type: 'image/png'});
+          const url = URL.createObjectURL(blob);
           setOptimizedSize(optimizedData.byteLength);
-          // @ts-ignore
-          document.getElementById('optimized-image').src = url;
-          // @ts-ignore
-          document.getElementById('download-button').href = url;
-          setLoading(false);
+          setDownloadLink(url);
+          console.info('Image optimization finished.')
           setOptimized(true);
         })
         .catch(error => {
           console.error('An error occurred while processing image:', error)
-          setLoading(false);
           setOptimized(false);
-        });
+        })
+        .finally(() => {
+          setLoading(false);
+        })
     }
     reader.readAsArrayBuffer(file);
   }, []);
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   return (
-    <div>
-      {isLoading ? <div className="loading"><Loader type="Bars" color="#00BFFF" height={80} width={80} /></div> : <Fragment/>}
-      {
-        isLoading
-          ? <div/>
-          : <div {...getRootProps()} className="dropzone"><input {...getInputProps()} /><p>Drag & drop an image file here to shrink it.</p></div>
-      }
-      <div className={isOptimized ? "visible" : "hidden"}>
-        <p id="optimized-title">Optimized image:</p>
-        <a id="download-button" href="/" download="optimized.png">
-          <div id="image-frame">
-            <img id="optimized-image" src="/" alt="Optimized" />
-          </div>
-        </a>
-        <p>Size reduced {originalSize}B → {optimizedSize}B ({(optimizedSize / originalSize * 100).toFixed(1)}% of original).</p>
-        <p id="help-text">Click above to download.</p>
+    <>
+      <div className="loading" hidden={!isLoading}>
+        <Loader type="Bars" color="#00BFFF" height={80} width={80} visible={isLoading} />
       </div>
-    </div>
+      <div className="dropzone" hidden={isLoading} {...getRootProps()}>
+        <input {...getInputProps()} />
+        <p>Drag & drop an image file here to shrink it.</p>
+      </div>
+      <div className={isOptimized ? "visible" : "hidden"}>
+        <OptimizedImage url={downloadLink} originalSize={originalSize} optimizedSize={optimizedSize} />
+      </div>
+    </>
+  );
+}
+
+type OptimizedImageProps = {
+  url: string,
+  originalSize: number,
+  optimizedSize: number
+};
+
+function OptimizedImage(props: OptimizedImageProps) {
+  const {url, originalSize, optimizedSize} = props;
+  return (
+    <>
+      <p id="optimized-title">Optimized image:</p>
+      <a id="download-button" href="/" download="optimized.png">
+        <div id="image-frame">
+          <img id="optimized-image" src={url} alt="Optimized" />
+        </div>
+      </a>
+      <p>Size reduced {originalSize}B → {optimizedSize}B ({(optimizedSize / originalSize * 100).toFixed(1)}% of original).</p>
+      <p id="help-text">Click above to download.</p>
+    </>
+  );
+}
+
+function Header() {
+  return (
+    <header>
+      <h1>Picopic!</h1>
+    </header>
   );
 }
 
 function App() {
   return (
-    <div>
-      <header className="App-header">
-        <h1>Picopic!</h1>
-      </header>
+    <>
+      <Header />
       <Dropzone />
-    </div>
+    </>
   );
 }
 
