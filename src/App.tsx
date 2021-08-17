@@ -12,7 +12,7 @@ async function uploadImage(imageData: ArrayBuffer) {
     throw new Error('Could not retrieve presigned URL for uploading the image.');
   }
   const {url, fields} = await response.json();
-  console.log('Received upload:', url);
+  console.log('Received upload URL.');
   const formData = constructFormData(imageData, fields);
   await submitFormData(url, formData);
   return fields.key;
@@ -57,7 +57,6 @@ async function downloadImage(key: string) {
 }
 
 async function processImage(imageData: ArrayBuffer) {
-  console.log('Processing image.');
   const url = await uploadImage(imageData);
   return await downloadImage(url);
 }
@@ -74,39 +73,31 @@ function Dropzone() {
     setOptimized(false);
     const file: File = acceptedFiles[0];
     const reader = new FileReader();
-    reader.onabort = () => {
-      setLoading(false);
-      setOptimized(false);
-    };
+    reader.onabort = () => setLoading(false);
     reader.onerror = reader.onabort;
-    reader.onload = () => {
+    reader.onload = async () => {
       console.log('Loading started.');
       const imageData = reader.result;
-      if (imageData instanceof ArrayBuffer) {
-        setOriginalSize(imageData.byteLength);
-      } else {
+      if (!(imageData instanceof ArrayBuffer)) {
         setLoading(false);
-        setOptimized(false);
         console.error('Data is not an ArrayBuffer!');
         return;
       }
+      setOriginalSize(imageData.byteLength);
       console.log('Starting image processing.');
-      processImage(imageData)
-        .then(optimizedData => {
-          const blob = new Blob([optimizedData], {type: 'image/png'});
-          const url = URL.createObjectURL(blob);
-          setOptimizedSize(optimizedData.byteLength);
-          setDownloadLink(url);
-          console.info('Image optimization finished.')
-          setOptimized(true);
-        })
-        .catch(error => {
-          console.error('An error occurred while processing image:', error)
-          setOptimized(false);
-        })
-        .finally(() => {
-          setLoading(false);
-        })
+      try {
+        const optimizedData = await processImage(imageData)
+        const blob = new Blob([optimizedData], {type: 'image/png'});
+        const url = URL.createObjectURL(blob);
+        setOptimizedSize(optimizedData.byteLength);
+        setDownloadLink(url);
+        console.log('Image optimization finished.')
+        setOptimized(true);
+      } catch (error) {
+        console.error('An error occurred while processing image:', error)
+      } finally {
+        setLoading(false);
+      }
     }
     reader.readAsArrayBuffer(file);
   }, []);
