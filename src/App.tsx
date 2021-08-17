@@ -115,14 +115,18 @@ function Dropzone() {
   return (
     <>
       <div className="loading" hidden={!isLoading}>
-        <Loader type="Bars" color="#00BFFF" height={80} width={80} visible={isLoading} />
+        <Loader type="Bars" color="#00BFFF" height={80} width={80} />
       </div>
       <div className="dropzone" hidden={isLoading} {...getRootProps()}>
         <input {...getInputProps()} />
-        <p>Drag & drop an image file here to shrink it.</p>
+        <p>Drag &amp; drop an image file here to shrink it.</p>
       </div>
-      <div className={isOptimized ? "visible" : "hidden"}>
-        <OptimizedImage url={downloadLink} originalSize={originalSize} optimizedSize={optimizedSize} />
+      <div hidden={!isOptimized}>
+        <OptimizedImage
+          url={downloadLink}
+          originalSize={originalSize}
+          optimizedSize={optimizedSize}
+        />
       </div>
     </>
   );
@@ -142,10 +146,10 @@ function OptimizedImage(props: OptimizedImageProps) {
       <a id="download-button" href="/" download="optimized.png">
         <div id="image-frame">
           <img id="optimized-image" src={url} alt="Optimized" />
+          <p id="help-text">Click here to download</p>
         </div>
       </a>
       <p>Size reduced {originalSize}B → {optimizedSize}B ({(optimizedSize / originalSize * 100).toFixed(1)}% of original).</p>
-      <p id="help-text">Click above to download.</p>
     </>
   );
 }
