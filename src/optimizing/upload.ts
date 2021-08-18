@@ -1,6 +1,6 @@
 import {baseUrl} from './constants';
 
-export async function uploadImage(imageData: ArrayBuffer) {
+export async function uploadImage(imageData: ArrayBuffer): Promise<string> {
   console.log('Uploading image.');
   const response = await fetch(`${baseUrl}/upload-url`, {mode: 'cors'});
   if (response.status !== 200) {
@@ -12,7 +12,7 @@ export async function uploadImage(imageData: ArrayBuffer) {
   return fields.key;
 }
 
-async function fetchUploadUrl() {
+async function fetchUploadUrl(): Promise<any> {
   console.log('Fetching upload URL.');
   const response = await fetch(`${baseUrl}/upload-url`, {mode: 'cors'});
   if (response.status !== 200) {

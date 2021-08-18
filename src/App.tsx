@@ -100,18 +100,12 @@ function OptimizedImage(props: OptimizedImageProps) {
   );
 }
 
-function Header() {
-  return (
-    <header>
-      <h1>Picopic!</h1>
-    </header>
-  );
-}
-
 function App() {
   return (
     <>
-      <Header />
+      <header>
+        <h1>Picopic!</h1>
+      </header>
       <Dropzone />
     </>
   );

@@ -1,6 +1,6 @@
 import {baseUrl} from './constants';
 
-export async function downloadImage(key: string) {
+export async function downloadImage(key: string): Promise<ArrayBuffer> {
   console.log('Downloading image.');
   const {url} = await fetchDownloadUrl(key);
   const response = await fetch(url, {mode: 'cors'});
@@ -10,7 +10,7 @@ export async function downloadImage(key: string) {
   return await response.arrayBuffer();
 }
 
-async function fetchDownloadUrl(key: string) {
+async function fetchDownloadUrl(key: string): Promise<any> {
   console.log('Fetching download URL.');
   const response = await fetch(`${baseUrl}/download-url/${key}`, {mode: 'cors'})
   if (response.status !== 200) {
