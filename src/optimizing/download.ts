@@ -3,7 +3,7 @@ import {baseUrl} from './constants';
 export async function downloadImage(key: string): Promise<ArrayBuffer> {
   console.log('Downloading image.');
   const {url} = await fetchDownloadUrl(key);
-  const response = await fetch(url, {mode: 'cors'});
+  const response = await fetch(url);
   if (response.status !== 200) {
     throw new Error(`Image optimization failed (status ${response.status}).`);
   }
@@ -12,7 +12,7 @@ export async function downloadImage(key: string): Promise<ArrayBuffer> {
 
 async function fetchDownloadUrl(key: string): Promise<any> {
   console.log('Fetching download URL.');
-  const response = await fetch(`${baseUrl}/download-url/${key}`, {mode: 'cors'})
+  const response = await fetch(`${baseUrl}/download-url/${key}`);
   if (response.status !== 200) {
     throw new Error(`Could not retrieve download URL (status ${response.status}).`);
   }
