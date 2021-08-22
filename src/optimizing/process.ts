@@ -1,15 +1,10 @@
 import {uploadImage} from './upload';
 import {downloadImage} from './download';
-
-type ProcessFileSuccessParams = {
-  originalSize: number,
-  optimizedSize: number,
-  downloadUrl: string,
-};
+import {OptimizationResultProps} from '../OptimizationResult';
 
 export function processFile(
   file: File,
-  onSuccess: (params: ProcessFileSuccessParams) => void,
+  onSuccess: (params: OptimizationResultProps) => void,
   onError: (error: Error) => void,
   onAbort: () => void,
 ) {
@@ -28,9 +23,9 @@ export function processFile(
       const blob = new Blob([optimizedData], {type: 'image/png'});
       const downloadUrl = URL.createObjectURL(blob);
       onSuccess({
+        url: downloadUrl,
         originalSize: imageData.byteLength,
         optimizedSize: optimizedData.byteLength,
-        downloadUrl: downloadUrl,
       });
     } catch (error) {
       onError(error);

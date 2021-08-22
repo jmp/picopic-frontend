@@ -1,6 +1,6 @@
 import React from "react";
 
-type OptimizationResultProps = {
+export type OptimizationResultProps = {
   url: string,
   originalSize: number,
   optimizedSize: number,

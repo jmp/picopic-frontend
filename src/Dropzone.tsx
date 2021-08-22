@@ -2,7 +2,7 @@ import React, {useCallback, useState} from "react";
 import {processFile} from "./optimizing/process";
 import {useDropzone} from "react-dropzone";
 import Loader from "react-loader-spinner";
-import {OptimizationResult} from "./OptimizationResult";
+import {OptimizationResult, OptimizationResultProps} from "./OptimizationResult";
 
 enum State {
   Ready,
@@ -13,21 +13,17 @@ enum State {
 }
 
 export function Dropzone() {
-  const [downloadLink, setDownloadUrl] = useState('/');
   const [state, setState] = useState(State.Ready);
-  const [originalSize, setOriginalSize] = useState(0);
-  const [optimizedSize, setOptimizedSize] = useState(0);
+  const [result, setResult] = useState({} as OptimizationResultProps);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log('File selected.');
     setState(State.Loading);
     acceptedFiles.forEach((file: File) => {
       processFile(
         file,
-        ({originalSize, optimizedSize, downloadUrl}) => {
+        ({originalSize, optimizedSize, url}) => {
           setState(State.Success);
-          setOriginalSize(originalSize);
-          setOptimizedSize(optimizedSize);
-          setDownloadUrl(downloadUrl);
+          setResult({url, originalSize, optimizedSize});
         },
         (error) => {
           console.error('Failed to process image:', error);
@@ -56,11 +52,7 @@ export function Dropzone() {
         <p className="help-text">Drag &amp; drop an image file here to shrink it.</p>
       </div>
       <div hidden={state !== State.Success}>
-        <OptimizationResult
-          url={downloadLink}
-          originalSize={originalSize}
-          optimizedSize={optimizedSize}
-        />
+        <OptimizationResult {...result} />
       </div>
     </>
   );
