@@ -5,7 +5,7 @@ import App from './App';
 jest.mock('react-dom', () => ({ render: jest.fn() }));
 
 describe('App root', () => {
-  it('should render without crashing', () => {
+  it('renders without crashing', () => {
     const div = document.createElement('div');
     div.id = 'root';
     document.body.appendChild(div);
