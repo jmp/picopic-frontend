@@ -6,15 +6,15 @@ jest.mock('react-dom', () => ({ render: jest.fn() }));
 
 describe('App root', () => {
   it('renders without crashing', () => {
-    const div = document.createElement('div');
-    div.id = 'root';
-    document.body.appendChild(div);
+    const root = document.createElement('div');
+    root.id = 'root';
+    document.body.appendChild(root);
     require('./index.tsx');
     expect(ReactDOM.render).toHaveBeenCalledWith(
       <React.StrictMode>
         <App />
       </React.StrictMode>,
-      div,
+      root,
     );
   });
 });
