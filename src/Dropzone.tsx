@@ -52,7 +52,7 @@ export function Dropzone() {
         <Loader type="Bars" color="#00BFFF" height={80} width={80}/>
       </div>
       <div className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
-        <input {...getInputProps()} />
+        <input alt="File" {...getInputProps()} />
         <p className="help-text">Drag &amp; drop an image file here to shrink it.</p>
       </div>
       <div hidden={state !== State.Success}>

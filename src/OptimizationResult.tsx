@@ -11,7 +11,7 @@ export function OptimizationResult(props: OptimizationResultProps) {
   return (
     <>
       <p id="optimized-title">Optimized image:</p>
-      <a id="download-button" href="/" download="optimized.png">
+      <a id="download-button" href={url} download="optimized.png">
         <div id="image-frame">
           <img id="optimized-image" src={url} alt="Optimized"/>
           <p id="help-text">Click here to download</p>
