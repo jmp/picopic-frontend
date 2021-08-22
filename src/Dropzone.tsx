@@ -4,7 +4,12 @@ import {useDropzone} from "react-dropzone";
 import Loader from "react-loader-spinner";
 import {OptimizationResult, OptimizationResultProps} from "./OptimizationResult";
 
-enum State {
+type DropzoneProps = {
+  state?: State,
+  result?: OptimizationResultProps,
+};
+
+export enum State {
   Ready,
   Loading,
   Success,
@@ -12,9 +17,13 @@ enum State {
   Aborted,
 }
 
-export function Dropzone() {
-  const [state, setState] = useState(State.Ready);
-  const [result, setResult] = useState({} as OptimizationResultProps);
+export function Dropzone(props: DropzoneProps = {
+  state: State.Ready,
+  result: {url: '', originalSize: 0, optimizedSize: 0},
+}) {
+  const {state: initialState, result: initialResult = {url: '', originalSize: 0, optimizedSize: 0}} = props;
+  const [state, setState] = useState(initialState);
+  const [result, setResult] = useState(initialResult);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log('File selected.');
     setState(State.Loading);
@@ -44,14 +53,14 @@ export function Dropzone() {
 
   return (
     <>
-      <div className="loading" hidden={state !== State.Loading}>
+      <div title="Loading..." className="loading" hidden={state !== State.Loading}>
         <Loader type="Bars" color="#00BFFF" height={80} width={80}/>
       </div>
-      <div className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
+      <div title="File" className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
         <input alt="File" {...getInputProps()} />
         <p className="help-text">Drag &amp; drop an image file here to shrink it.</p>
       </div>
-      <div hidden={state !== State.Success}>
+      <div title="Result" hidden={state !== State.Success}>
         <OptimizationResult {...result} />
       </div>
     </>

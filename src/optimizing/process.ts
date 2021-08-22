@@ -21,7 +21,7 @@ export function processFile(
       const url = await uploadImage(imageData);
       const optimizedData = await downloadImage(url);
       const blob = new Blob([optimizedData], {type: 'image/png'});
-      const downloadUrl = URL.createObjectURL(blob);
+      const downloadUrl = URL.createObjectURL(blob).toString();
       onSuccess({
         url: downloadUrl,
         originalSize: imageData.byteLength,
