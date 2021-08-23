@@ -1,7 +1,13 @@
-export function Loader() {
+type LoaderProps = {
+  hidden: boolean
+};
+
+export function Loader({hidden}: LoaderProps) {
   return (
-    <div className="lds-spinner">
-      <div/><div/><div/><div/><div/><div/><div/><div/><div/><div/><div/><div/>
+    <div hidden={hidden} className="loading">
+      <div title="Loading..." className="lds-spinner">
+        <div/><div/><div/><div/><div/><div/><div/><div/><div/><div/><div/><div/>
+      </div>
     </div>
   );
 }

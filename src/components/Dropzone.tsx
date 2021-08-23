@@ -3,6 +3,7 @@ import {processFile} from '../optimizing/process';
 import {useDropzone} from 'react-dropzone';
 import {Result, ResultProps} from './Result';
 import {Loader} from './Loader';
+import {Help} from './Help';
 
 type DropzoneProps = {
   state?: State,
@@ -53,16 +54,12 @@ export function Dropzone(props: DropzoneProps = {
 
   return (
     <>
-      <div title='Loading...' className='loading' hidden={state !== State.Loading}>
-        <Loader />
+      <Loader hidden={state !== State.Loading} />
+      <div title="File" className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
+        <input alt="File" {...getInputProps()} />
+        <Help>Drag &amp; drop an image file here to shrink it.</Help>
       </div>
-      <div title='File' className='dropzone' hidden={state === State.Loading} {...getRootProps()}>
-        <input alt='File' {...getInputProps()} />
-        <p className='help-text'>Drag &amp; drop an image file here to shrink it.</p>
-      </div>
-      <div title='Result' hidden={state !== State.Success}>
-        <Result {...result} />
-      </div>
+      <Result {...result} hidden={state !== State.Success} />
     </>
   );
 }
