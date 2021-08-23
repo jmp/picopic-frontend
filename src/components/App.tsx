@@ -1,12 +1,11 @@
 import React from 'react';
 import {Dropzone} from './Dropzone';
+import {Header} from './Header';
 
 function App() {
   return (
     <>
-      <header>
-        <h1>Picopic!</h1>
-      </header>
+      <Header title="Picopic!" />
       <Dropzone />
     </>
   );
