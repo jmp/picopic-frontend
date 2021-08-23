@@ -1,10 +1,10 @@
 import {uploadImage} from './upload';
 import {downloadImage} from './download';
-import {OptimizationResultProps} from '../components/OptimizationResult';
+import {ResultProps} from '../components/Result';
 
 export function processFile(
   file: File,
-  onSuccess: (params: OptimizationResultProps) => void,
+  onSuccess: (params: ResultProps) => void,
   onError: (error: Error) => void,
   onAbort: () => void,
 ) {

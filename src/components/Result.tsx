@@ -1,12 +1,12 @@
 import React from 'react';
 
-export type OptimizationResultProps = {
+export type ResultProps = {
   url: string,
   originalSize: number,
   optimizedSize: number,
 };
 
-export function OptimizationResult(props: OptimizationResultProps) {
+export function Result(props: ResultProps) {
   const {url, originalSize, optimizedSize} = props;
   return (
     <>

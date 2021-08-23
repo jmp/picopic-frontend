@@ -1,12 +1,12 @@
 import React, {useCallback, useState} from 'react';
 import {processFile} from '../optimizing/process';
 import {useDropzone} from 'react-dropzone';
-import {OptimizationResult, OptimizationResultProps} from './OptimizationResult';
+import {Result, ResultProps} from './Result';
 import {Loader} from './Loader';
 
 type DropzoneProps = {
   state?: State,
-  result?: OptimizationResultProps,
+  result?: ResultProps,
 };
 
 export enum State {
@@ -61,7 +61,7 @@ export function Dropzone(props: DropzoneProps = {
         <p className='help-text'>Drag &amp; drop an image file here to shrink it.</p>
       </div>
       <div title='Result' hidden={state !== State.Success}>
-        <OptimizationResult {...result} />
+        <Result {...result} />
       </div>
     </>
   );
