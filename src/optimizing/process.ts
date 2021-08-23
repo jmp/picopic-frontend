@@ -1,6 +1,6 @@
 import {uploadImage} from './upload';
 import {downloadImage} from './download';
-import {OptimizationResultProps} from '../OptimizationResult';
+import {OptimizationResultProps} from '../components/OptimizationResult';
 
 export function processFile(
   file: File,

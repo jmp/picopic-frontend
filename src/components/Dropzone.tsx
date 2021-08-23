@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from "react";
-import {processFile} from "./optimizing/process";
+import {processFile} from "../optimizing/process";
 import {useDropzone} from "react-dropzone";
 import {OptimizationResult, OptimizationResultProps} from "./OptimizationResult";
 import {Loader} from './Loader';
