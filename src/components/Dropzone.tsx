@@ -1,7 +1,7 @@
-import React, {useCallback, useState} from "react";
-import {processFile} from "../optimizing/process";
-import {useDropzone} from "react-dropzone";
-import {OptimizationResult, OptimizationResultProps} from "./OptimizationResult";
+import React, {useCallback, useState} from 'react';
+import {processFile} from '../optimizing/process';
+import {useDropzone} from 'react-dropzone';
+import {OptimizationResult, OptimizationResultProps} from './OptimizationResult';
 import {Loader} from './Loader';
 
 type DropzoneProps = {
@@ -53,14 +53,14 @@ export function Dropzone(props: DropzoneProps = {
 
   return (
     <>
-      <div title="Loading..." className="loading" hidden={state !== State.Loading}>
+      <div title='Loading...' className='loading' hidden={state !== State.Loading}>
         <Loader />
       </div>
-      <div title="File" className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
-        <input alt="File" {...getInputProps()} />
-        <p className="help-text">Drag &amp; drop an image file here to shrink it.</p>
+      <div title='File' className='dropzone' hidden={state === State.Loading} {...getRootProps()}>
+        <input alt='File' {...getInputProps()} />
+        <p className='help-text'>Drag &amp; drop an image file here to shrink it.</p>
       </div>
-      <div title="Result" hidden={state !== State.Success}>
+      <div title='Result' hidden={state !== State.Success}>
         <OptimizationResult {...result} />
       </div>
     </>
