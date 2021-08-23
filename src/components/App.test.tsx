@@ -5,7 +5,7 @@ import App from './App';
 describe('App', () => {
   it('renders the app name', () => {
     render(<App />);
-    const name = screen.getByText(/picopic/i);
+    const name = screen.getByText('Picopic!');
     expect(name).toBeInTheDocument();
   });
 });
