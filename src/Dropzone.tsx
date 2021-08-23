@@ -1,8 +1,8 @@
 import React, {useCallback, useState} from "react";
 import {processFile} from "./optimizing/process";
 import {useDropzone} from "react-dropzone";
-import Loader from "react-loader-spinner";
 import {OptimizationResult, OptimizationResultProps} from "./OptimizationResult";
+import {Loader} from './Loader';
 
 type DropzoneProps = {
   state?: State,
@@ -54,7 +54,7 @@ export function Dropzone(props: DropzoneProps = {
   return (
     <>
       <div title="Loading..." className="loading" hidden={state !== State.Loading}>
-        <Loader type="Bars" color="#00BFFF" height={80} width={80}/>
+        <Loader />
       </div>
       <div title="File" className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
         <input alt="File" {...getInputProps()} />
