@@ -1,20 +1,20 @@
 import React from 'react';
 
 export type ResultProps = {
-  url: string,
+  downloadUrl: string,
   originalSize: number,
   optimizedSize: number,
-  hidden?: boolean,
+  hidden: boolean,
 };
 
 export function Result(props: ResultProps) {
-  const {url, originalSize, optimizedSize, hidden} = props;
+  const {downloadUrl, originalSize, optimizedSize, hidden} = props;
   return (
     <div title="Result" hidden={hidden}>
       <p id="optimized-title">Optimized image:</p>
-      <a id="download-button" href={url} download="optimized.png">
+      <a id="download-button" href={downloadUrl} download="optimized.png">
         <div id="image-frame">
-          <img id="optimized-image" src={url} alt="Optimized"/>
+          <img id="optimized-image" src={downloadUrl} alt="Optimized"/>
           <p id="help-text">Click here to download</p>
         </div>
       </a>

@@ -3,62 +3,71 @@ import {useDropzone} from 'react-dropzone';
 import {Result, ResultProps} from './Result';
 import {Loader} from './Loader';
 import {Help} from './Help';
-import {Optimizer} from '../optimization/optimizer';
-import {AwsOptimizer} from '../optimization/aws-optimizer';
+import {Optimizer} from '../optimization/optimizer/optimizer';
+import {AwsOptimizer} from '../optimization/optimizer/aws-optimizer';
 
 type DropzoneProps = {
-  state: State,
-  result: ResultProps,
+  result: OptimizationResult,
   optimizer: Optimizer,
 };
 
-export enum State {
+export enum OptimizationState {
   Ready,
   Loading,
   Success,
   Failure,
 }
 
+export type OptimizationResult = {
+  state: OptimizationState,
+  result: ResultProps,
+};
+
+const options = {
+  accept: ['image/png'],
+  multiple: false,
+  maxFiles: 1,
+  minSize: 67,
+  maxSize: 5_242_880,
+};
+
 export function Dropzone(props: DropzoneProps) {
   const optimizer = props.optimizer;
-  const [state, setState] = useState(props.state);
   const [result, setResult] = useState(props.result);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setState(State.Loading);
+    setResult({...result, state: OptimizationState.Loading});
     acceptedFiles.forEach(async (file: File) => {
       try {
         const result = await optimizer.optimize(file);
-        setState(State.Success);
-        setResult(result);
+        setResult({result, state: OptimizationState.Success});
       } catch (e) {
         console.error('Failed to process image:', e);
-        setState(State.Failure);
+        setResult({...result, state: OptimizationState.Failure});
       }
     });
-  }, []);
-  const {getRootProps, getInputProps} = useDropzone({
-    onDrop,
-    accept: ['image/png'],
-    multiple: false,
-    maxFiles: 1,
-    minSize: 67,
-    maxSize: 5_242_880,
-  })
-
+  }, [optimizer, result]);
+  const {getRootProps, getInputProps} = useDropzone({...options, onDrop});
   return (
     <>
-      <Loader hidden={state !== State.Loading} />
-      <div title="File" className="dropzone" hidden={state === State.Loading} {...getRootProps()}>
+      <Loader hidden={result.state !== OptimizationState.Loading} />
+      <div title="File" className="dropzone" hidden={result.state === OptimizationState.Loading} {...getRootProps()}>
         <input alt="File" {...getInputProps()} />
         <Help>Drag &amp; drop an image file here to shrink it.</Help>
       </div>
-      <Result {...result} hidden={state !== State.Success} />
+      <Result {...result.result} hidden={result.state !== OptimizationState.Success} />
     </>
   );
 }
 
 Dropzone.defaultProps = {
-  state: State.Ready,
-  result: {url: '', originalSize: 0, optimizedSize: 0},
+  result: {
+    state: OptimizationState.Ready,
+    result: {
+      optimizedUrl: '',
+      originalSize: 0,
+      optimizedSize: 0,
+      hidden: false,
+    },
+  },
   optimizer: new AwsOptimizer(),
 };
