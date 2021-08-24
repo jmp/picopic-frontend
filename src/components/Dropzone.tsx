@@ -1,13 +1,15 @@
 import React, {useCallback, useState} from 'react';
-import {processFile} from '../optimizing/process';
 import {useDropzone} from 'react-dropzone';
 import {Result, ResultProps} from './Result';
 import {Loader} from './Loader';
 import {Help} from './Help';
+import {Optimizer} from '../optimization/optimizer';
+import {AwsOptimizer} from '../optimization/aws-optimizer';
 
 type DropzoneProps = {
-  state?: State,
-  result?: ResultProps,
+  state: State,
+  result: ResultProps,
+  optimizer: Optimizer,
 };
 
 export enum State {
@@ -15,32 +17,23 @@ export enum State {
   Loading,
   Success,
   Failure,
-  Aborted,
 }
 
-export function Dropzone(props: DropzoneProps = {
-  state: State.Ready,
-  result: {url: '', originalSize: 0, optimizedSize: 0},
-}) {
-  const {state: initialState, result: initialResult = {url: '', originalSize: 0, optimizedSize: 0}} = props;
-  const [state, setState] = useState(initialState);
-  const [result, setResult] = useState(initialResult);
+export function Dropzone(props: DropzoneProps) {
+  const optimizer = props.optimizer;
+  const [state, setState] = useState(props.state);
+  const [result, setResult] = useState(props.result);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log('File selected.');
     setState(State.Loading);
-    acceptedFiles.forEach((file: File) => {
-      processFile(
-        file,
-        ({originalSize, optimizedSize, url}) => {
-          setState(State.Success);
-          setResult({url, originalSize, optimizedSize});
-        },
-        (error) => {
-          console.error('Failed to process image:', error);
-          setState(State.Failure);
-        },
-        () => setState(State.Aborted),
-      );
+    acceptedFiles.forEach(async (file: File) => {
+      try {
+        const result = await optimizer.optimize(file);
+        setState(State.Success);
+        setResult(result);
+      } catch (e) {
+        console.error('Failed to process image:', e);
+        setState(State.Failure);
+      }
     });
   }, []);
   const {getRootProps, getInputProps} = useDropzone({
@@ -63,3 +56,9 @@ export function Dropzone(props: DropzoneProps = {
     </>
   );
 }
+
+Dropzone.defaultProps = {
+  state: State.Ready,
+  result: {url: '', originalSize: 0, optimizedSize: 0},
+  optimizer: new AwsOptimizer(),
+};
