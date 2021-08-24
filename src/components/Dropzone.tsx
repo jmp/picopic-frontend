@@ -20,7 +20,7 @@ export enum OptimizationState {
 
 export type OptimizationResult = {
   state: OptimizationState,
-  result: ResultProps,
+  result?: ResultProps,
 };
 
 const options = {
@@ -32,20 +32,20 @@ const options = {
 };
 
 export function Dropzone(props: DropzoneProps) {
-  const optimizer = props.optimizer;
+  const {optimizer} = props;
   const [result, setResult] = useState(props.result);
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setResult({...result, state: OptimizationState.Loading});
-    acceptedFiles.forEach(async (file: File) => {
+  const onDrop = useCallback((files: File[]) => {
+    setResult({state: OptimizationState.Loading});
+    files.forEach(async (file: File) => {
       try {
         const result = await optimizer.optimize(file);
         setResult({result, state: OptimizationState.Success});
       } catch (e) {
         console.error('Failed to process image:', e);
-        setResult({...result, state: OptimizationState.Failure});
+        setResult({state: OptimizationState.Failure});
       }
     });
-  }, [optimizer, result]);
+  }, [optimizer]);
   const {getRootProps, getInputProps} = useDropzone({...options, onDrop});
   return (
     <>
@@ -54,7 +54,7 @@ export function Dropzone(props: DropzoneProps) {
         <input alt="File" {...getInputProps()} />
         <Help>Drag &amp; drop an image file here to shrink it.</Help>
       </div>
-      <Result {...result.result} hidden={result.state !== OptimizationState.Success} />
+      <Result {...result.result} />
     </>
   );
 }
@@ -66,7 +66,6 @@ Dropzone.defaultProps = {
       optimizedUrl: '',
       originalSize: 0,
       optimizedSize: 0,
-      hidden: false,
     },
   },
   optimizer: new AwsOptimizer(),

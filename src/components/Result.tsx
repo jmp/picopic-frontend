@@ -3,14 +3,13 @@ import React from 'react';
 export type ResultProps = {
   downloadUrl: string,
   originalSize: number,
-  optimizedSize: number,
-  hidden: boolean,
+  optimizedSize: number
 };
 
 export function Result(props: ResultProps) {
-  const {downloadUrl, originalSize, optimizedSize, hidden} = props;
+  const {downloadUrl, originalSize, optimizedSize} = props;
   return (
-    <div title="Result" hidden={hidden}>
+    <div title="Result" hidden={!downloadUrl}>
       <p id="optimized-title">Optimized image:</p>
       <a id="download-button" href={downloadUrl} download="optimized.png">
         <div id="image-frame">
@@ -23,3 +22,9 @@ export function Result(props: ResultProps) {
     </div>
   );
 }
+
+Result.defaultProps = {
+  downloadUrl: '',
+  originalSize: 0,
+  optimizedSize: 0,
+};

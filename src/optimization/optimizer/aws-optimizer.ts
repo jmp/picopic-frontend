@@ -19,7 +19,6 @@ export class AwsOptimizer implements Optimizer {
             downloadUrl: URL.createObjectURL(blob).toString(),
             originalSize: originalImageData.byteLength,
             optimizedSize: optimizedImageData.byteLength,
-            hidden: false,
           });
         } catch (error) {
           reject(error);
