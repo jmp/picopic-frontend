@@ -7,6 +7,7 @@ import {Optimizer} from '../optimization/optimizer/optimizer';
 import {AwsOptimizer} from '../optimization/optimizer/aws-optimizer';
 
 type DropzoneProps = {
+  state: OptimizationState,
   result: OptimizationResult,
   optimizer: Optimizer,
 };
@@ -18,10 +19,7 @@ export enum OptimizationState {
   Failure,
 }
 
-export type OptimizationResult = {
-  state: OptimizationState,
-  result?: ResultProps,
-};
+export type OptimizationResult = ResultProps;
 
 const options = {
   accept: ['image/png'],
@@ -33,40 +31,40 @@ const options = {
 
 export function Dropzone(props: DropzoneProps) {
   const {optimizer} = props;
+  const [state, setState] = useState(props.state);
   const [result, setResult] = useState(props.result);
   const onDrop = useCallback((files: File[]) => {
-    setResult({state: OptimizationState.Loading});
+    setState(OptimizationState.Loading);
     files.forEach(async (file: File) => {
       try {
         const result = await optimizer.optimize(file);
-        setResult({result, state: OptimizationState.Success});
+        setResult(result);
+        setState(OptimizationState.Success)
       } catch (e) {
         console.error('Failed to process image:', e);
-        setResult({state: OptimizationState.Failure});
+        setState(OptimizationState.Failure);
       }
     });
   }, [optimizer]);
   const {getRootProps, getInputProps} = useDropzone({...options, onDrop});
   return (
     <>
-      <Loader hidden={result.state !== OptimizationState.Loading} />
-      <div title="File" className="dropzone" hidden={result.state === OptimizationState.Loading} {...getRootProps()}>
+      <Loader hidden={state !== OptimizationState.Loading} />
+      <div title="File" className="dropzone" hidden={state === OptimizationState.Loading} {...getRootProps()}>
         <input alt="File" {...getInputProps()} />
         <Help>Drag &amp; drop an image file here to shrink it.</Help>
       </div>
-      <Result {...result.result} />
+      <Result {...result} />
     </>
   );
 }
 
 Dropzone.defaultProps = {
+  state: OptimizationState.Ready,
   result: {
-    state: OptimizationState.Ready,
-    result: {
-      optimizedUrl: '',
-      originalSize: 0,
-      optimizedSize: 0,
-    },
+    optimizedUrl: '',
+    originalSize: 0,
+    optimizedSize: 0,
   },
   optimizer: new AwsOptimizer(),
 };
