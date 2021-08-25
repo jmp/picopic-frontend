@@ -5,6 +5,7 @@ import {OptimizationResult, Optimizer} from '../optimization/optimizer/optimizer
 import {Result} from './Result';
 import {Loader} from './Loader';
 import {Help} from './Help';
+import {Error} from './Error';
 import {AwsOptimizer} from '../optimization/optimizer/aws-optimizer';
 
 type AppProps = {
@@ -21,6 +22,7 @@ export enum OptimizationState {
 }
 
 export function App(props: AppProps) {
+  const [error, setError] = useState(null);
   const [state, setState] = useState(props.state);
   const [result, setResult] = useState(props.result);
   const onDrop = useCallback((files: File[]) => {
@@ -32,6 +34,7 @@ export function App(props: AppProps) {
         setState(OptimizationState.Success)
       } catch (e) {
         setState(OptimizationState.Failure);
+        setError(e.message);
       }
     });
   }, [props.optimizer]);
@@ -43,6 +46,7 @@ export function App(props: AppProps) {
         <Help>Drag &amp; drop an image file here to shrink it.</Help>
       </Dropzone>
       <Result hidden={state !== OptimizationState.Success} {...result} />
+      <Error hidden={state !== OptimizationState.Failure}>{error}</Error>
     </>
   );
 }
