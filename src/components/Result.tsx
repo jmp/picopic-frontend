@@ -1,15 +1,14 @@
 import React from 'react';
+import {OptimizationResult} from '../optimization/optimizer/optimizer';
 
-export type ResultProps = {
-  downloadUrl: string,
-  originalSize: number,
-  optimizedSize: number
+export type ResultProps = OptimizationResult & {
+  hidden: boolean,
 };
 
 export function Result(props: ResultProps) {
-  const {downloadUrl, originalSize, optimizedSize} = props;
+  const {downloadUrl, originalSize, optimizedSize, hidden} = props;
   return (
-    <div title="Result" hidden={!downloadUrl}>
+    <div hidden={hidden} title="Result">
       <p id="optimized-title">Optimized image:</p>
       <a id="download-button" href={downloadUrl} download="optimized.png">
         <div id="image-frame">
@@ -27,4 +26,5 @@ Result.defaultProps = {
   downloadUrl: '',
   originalSize: 0,
   optimizedSize: 0,
+  hidden: false,
 };

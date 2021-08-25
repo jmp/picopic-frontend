@@ -6,7 +6,7 @@ type HelpProps = {
 
 export function Help({children}: HelpProps) {
   return (
-    <p className='help-text'>
+    <p className="help-text">
       {children}
     </p>
   );

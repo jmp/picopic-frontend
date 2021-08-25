@@ -1,27 +1,13 @@
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import {useDropzone} from 'react-dropzone';
-import {Result, ResultProps} from './Result';
-import {Loader} from './Loader';
-import {Help} from './Help';
-import {Optimizer} from '../optimization/optimizer/optimizer';
-import {AwsOptimizer} from '../optimization/optimizer/aws-optimizer';
 
 type DropzoneProps = {
-  state: OptimizationState,
-  result: OptimizationResult,
-  optimizer: Optimizer,
+  onDrop: (files: File[]) => void,
+  children: any,
+  hidden: boolean,
 };
 
-export enum OptimizationState {
-  Ready,
-  Loading,
-  Success,
-  Failure,
-}
-
-export type OptimizationResult = ResultProps;
-
-const options = {
+const dropzoneOptions = {
   accept: ['image/png'],
   multiple: false,
   maxFiles: 1,
@@ -30,41 +16,18 @@ const options = {
 };
 
 export function Dropzone(props: DropzoneProps) {
-  const {optimizer} = props;
-  const [state, setState] = useState(props.state);
-  const [result, setResult] = useState(props.result);
-  const onDrop = useCallback((files: File[]) => {
-    setState(OptimizationState.Loading);
-    files.forEach(async (file: File) => {
-      try {
-        const result = await optimizer.optimize(file);
-        setResult(result);
-        setState(OptimizationState.Success)
-      } catch (e) {
-        console.error('Failed to process image:', e);
-        setState(OptimizationState.Failure);
-      }
-    });
-  }, [optimizer]);
-  const {getRootProps, getInputProps} = useDropzone({...options, onDrop});
+  const {onDrop, children, hidden} = props;
+  const {getRootProps, getInputProps} = useDropzone({...dropzoneOptions, onDrop});
   return (
-    <>
-      <Loader hidden={state !== OptimizationState.Loading} />
-      <div title="File" className="dropzone" hidden={state === OptimizationState.Loading} {...getRootProps()}>
-        <input alt="File" {...getInputProps()} />
-        <Help>Drag &amp; drop an image file here to shrink it.</Help>
-      </div>
-      <Result {...result} />
-    </>
+    <div role="form" hidden={hidden} className="dropzone" {...getRootProps()}>
+      <input alt="File" {...getInputProps()} />
+      {children}
+    </div>
   );
 }
 
 Dropzone.defaultProps = {
-  state: OptimizationState.Ready,
-  result: {
-    optimizedUrl: '',
-    originalSize: 0,
-    optimizedSize: 0,
-  },
-  optimizer: new AwsOptimizer(),
+  onDrop: () => {},
+  children: null,
+  hidden: false,
 };

@@ -1,5 +1,9 @@
-import {ResultProps} from '../../components/Result';
+export type OptimizationResult = {
+  downloadUrl: string,
+  originalSize: number,
+  optimizedSize: number,
+};
 
 export interface Optimizer {
-  optimize(file: File): Promise<ResultProps>
+  optimize(file: File): Promise<OptimizationResult>
 }

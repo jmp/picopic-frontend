@@ -1,10 +1,9 @@
-import {Optimizer} from './optimizer';
+import {OptimizationResult, Optimizer} from './optimizer';
 import {uploadImage} from '../upload';
 import {downloadImage} from '../download';
-import {ResultProps} from '../../components/Result';
 
 export class AwsOptimizer implements Optimizer {
-  async optimize(file: File): Promise<ResultProps> {
+  async optimize(file: File): Promise<OptimizationResult> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onabort = () => reject(new Error('image read aborted'));
