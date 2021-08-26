@@ -2,7 +2,7 @@ import React from 'react';
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import user from '@testing-library/user-event';
 import App, {OptimizationState} from './App';
-import {OptimizationResult, Optimizer} from '../optimization/optimizer/optimizer';
+import {OptimizationResult, Optimizer} from '../optimization/optimizer';
 
 describe('App', () => {
   it('renders the app name', () => {

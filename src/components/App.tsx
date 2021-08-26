@@ -1,12 +1,13 @@
 import React, {useCallback, useState} from 'react';
 import {Dropzone} from './Dropzone';
 import {Header} from './Header';
-import {OptimizationResult, Optimizer} from '../optimization/optimizer/optimizer';
+import {OptimizationResult, Optimizer} from '../optimization/optimizer';
 import {Result} from './Result';
 import {Loader} from './Loader';
 import {Help} from './Help';
 import {Error} from './Error';
-import {AwsOptimizer} from '../optimization/optimizer/aws-optimizer';
+import {uploadImage} from '../optimization/upload';
+import {downloadImage} from '../optimization/download';
 
 type AppProps = {
   state: OptimizationState,
@@ -58,7 +59,7 @@ App.defaultProps = {
     originalSize: 0,
     optimizedSize: 0,
   },
-  optimizer: new AwsOptimizer(),
+  optimizer: new Optimizer(uploadImage, downloadImage),
 };
 
 export default App;

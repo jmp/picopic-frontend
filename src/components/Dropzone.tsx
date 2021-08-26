@@ -27,7 +27,6 @@ export function Dropzone(props: DropzoneProps) {
 }
 
 Dropzone.defaultProps = {
-  onDrop: () => {},
   children: null,
   hidden: false,
 };

@@ -4,17 +4,17 @@ import {Dropzone} from './Dropzone';
 
 describe('Dropzone', () => {
   it('shows a file input field when not hidden', () => {
-    render(<Dropzone />);
+    render(<Dropzone onDrop={() => {}} />);
     expect(screen.queryByRole("form")).not.toBeNull();
   });
 
   it('does not show a file input field when loading', () => {
-    render(<Dropzone hidden />);
+    render(<Dropzone onDrop={() => {}} hidden />);
     expect(screen.queryByRole("form")).toBeNull();
   });
 
   it('renders children', () => {
-    render(<Dropzone><p>Testing</p></Dropzone>);
+    render(<Dropzone onDrop={() => {}}><p>Testing</p></Dropzone>);
     expect(screen.getByText("Testing")).toBeInTheDocument();
   });
 });
