@@ -11,3 +11,7 @@ export function Loader({hidden}: LoaderProps) {
     </div>
   );
 }
+
+Loader.defaultProps = {
+  hidden: false,
+};
