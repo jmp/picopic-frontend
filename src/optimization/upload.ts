@@ -1,4 +1,4 @@
-import {baseUrl} from './constants';
+import {baseUrl} from '../../package.json';
 
 export async function uploadImage(imageData: ArrayBuffer): Promise<string> {
   const {url, fields} = await fetchUploadUrl();

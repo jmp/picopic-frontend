@@ -1,4 +1,4 @@
-import {baseUrl} from './constants';
+import {baseUrl} from '../../package.json';
 
 export async function downloadImage(key: string): Promise<ArrayBuffer> {
   const {url} = await fetchDownloadUrl(key);

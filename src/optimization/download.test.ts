@@ -1,7 +1,7 @@
 import {setupServer} from 'msw/node';
 import {rest} from 'msw';
-import {baseUrl} from './constants';
 import {downloadImage} from './download';
+import {baseUrl} from '../../package.json';
 
 const server = setupServer();
 
