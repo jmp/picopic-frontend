@@ -7,8 +7,9 @@ type ErrorProps = {
 
 export function Error({children, hidden}: ErrorProps) {
   return (
-    <p hidden={hidden} className="error">
+    <div hidden={hidden} className="error">
+      <div className="error-title">Oops!</div>
       {children}
-    </p>
+    </div>
   );
 }
