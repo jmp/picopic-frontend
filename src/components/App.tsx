@@ -33,7 +33,7 @@ export function App(props: AppProps) {
         const result = await props.optimizer.optimize(file);
         setResult(result);
         setState(OptimizationState.Success)
-      } catch (e) {
+      } catch (e: any) {
         setState(OptimizationState.Failure);
         setError(e.message);
       }
