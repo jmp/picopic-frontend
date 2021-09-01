@@ -1,8 +1,10 @@
 import {Optimizer} from './optimizer';
 
 describe('Optimizer', () => {
+  const downloadUrl = 'http://localhost/some-url';
+
   beforeEach(() => {
-    window.URL.createObjectURL = jest.fn(() => 'http://localhost/some-url');
+    window.URL.createObjectURL = jest.fn(() => downloadUrl);
   });
 
   afterEach(() => {
@@ -26,7 +28,7 @@ describe('Optimizer', () => {
     const optimizer = new Optimizer(uploadImage, downloadImage);
     const result = await optimizer.optimize(imageToOptimize);
     expect(result).toEqual({
-      downloadUrl: 'http://localhost/some-url',
+      downloadUrl,
       originalSize: originalImage.byteLength,
       optimizedSize: optimizedImage.byteLength,
     });

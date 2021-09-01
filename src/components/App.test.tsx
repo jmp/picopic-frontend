@@ -1,9 +1,20 @@
 import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import App, {OptimizationState} from './App';
-import {OptimizationResult, Optimizer} from '../optimization/optimizer';
+import {Optimizer} from '../optimization/optimizer';
 
 describe('App', () => {
+  const downloadUrl = 'http://localhost/fake-download-url';
+
+  beforeEach(() => {
+    window.URL.createObjectURL = jest.fn(() => downloadUrl);
+  });
+
+  afterEach(() => {
+    // @ts-ignore
+    window.URL.createObjectURL.mockReset();
+  });
+
   it('renders the app name', () => {
     render(<App />);
     const name = screen.getByText(/picopic/i);
@@ -48,34 +59,34 @@ describe('App', () => {
   });
 
   it('optimizes the chosen image', async () => {
-    const image = new File([new ArrayBuffer(512)], 'tmp.png', {type: 'image/png' });
-    const expected = {downloadUrl: 'dummy', originalSize: 512, optimizedSize: 256};
-    let imageToOptimize: File | null = null;
-    let optimizationResult: OptimizationResult | null = null;
-    const optimizer = new class implements Optimizer {
-      async optimize(file: File): Promise<OptimizationResult> {
-        imageToOptimize = file;
-        optimizationResult = expected;
-        return expected;
-      }
-    }();
+    const expectedKey = '570084b01d3a49baa1e39b61fd5690d3';
+    const expectedImageData = new ArrayBuffer(512);
+    const optimizedImageData = new ArrayBuffer(256);
+    const image = new File([expectedImageData], 'tmp.png', {type: 'image/png' });
+    const uploadImage = async (imageData: ArrayBuffer) => {
+      expect(imageData).toEqual(expectedImageData);
+      return expectedKey;
+    };
+    const downloadImage = async (key: string) => {
+      expect(key).toEqual(expectedKey);
+      return optimizedImageData;
+    };
+    const optimizer = new Optimizer(uploadImage, downloadImage);
     render(<App optimizer={optimizer} />);
     const input = screen.getByAltText(/file/i);
     Object.defineProperty(input, 'files', {value: [image]});
     fireEvent.change(input);
-    await waitFor(() => expect(screen.getByTitle(/loading/i)).not.toBeVisible());
-    expect(imageToOptimize).toEqual(image);
-    expect(optimizationResult).toEqual(expected);
+    await waitFor(() => expect(
+      screen.getByText("Size reduced 512B → 256B (50.0% of original).")
+    ).toBeVisible());
   });
 
   it('stops loading if optimizing an image fails', async () => {
     const expectedError = 'Something failed!';
     const image = new File([new ArrayBuffer(512)], 'tmp.png', {type: 'image/png' });
-    const optimizer = new class implements Optimizer {
-      async optimize(file: File): Promise<OptimizationResult> {
-        throw new Error(expectedError);
-      }
-    }();
+    const uploadImage = async () => { throw new Error(expectedError); };
+    const downloadImage = async () => new ArrayBuffer(0);
+    const optimizer = new Optimizer(uploadImage, downloadImage);
     render(<App optimizer={optimizer} />);
     const input = screen.getByAltText(/file/i);
     Object.defineProperty(input, 'files', {value: [image]});
