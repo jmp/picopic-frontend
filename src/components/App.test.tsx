@@ -1,7 +1,7 @@
 import React from 'react';
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import App, {OptimizationState} from './App';
-import {Optimizer} from '../optimization/optimizer';
+import {Optimizer} from '../application/optimizer';
 
 describe('App', () => {
   const downloadUrl = 'http://localhost/fake-download-url';

@@ -1,13 +1,13 @@
 import React, {useCallback, useState} from 'react';
 import {Dropzone} from './Dropzone';
 import {Header} from './Header';
-import {OptimizationResult, Optimizer} from '../optimization/optimizer';
+import {OptimizationResult, Optimizer} from '../application/optimizer';
 import {Result} from './Result';
 import {Loader} from './Loader';
 import {Help} from './Help';
 import {Error} from './Error';
-import {uploadImage} from '../optimization/upload';
-import {downloadImage} from '../optimization/download';
+import {uploadImage} from '../application/upload';
+import {downloadImage} from '../application/download';
 
 type AppProps = {
   state: OptimizationState,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {OptimizationResult} from '../optimization/optimizer';
+import {OptimizationResult} from '../application/optimizer';
 
 export type ResultProps = OptimizationResult & {
   hidden: boolean,
