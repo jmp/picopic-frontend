@@ -5,9 +5,9 @@ import {baseUrl} from '../../package.json';
 
 const server = setupServer();
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe('downloadImage', () => {
   it('downloads an image by the given key', async () => {
