@@ -12,7 +12,7 @@ export async function downloadImage(key: string): Promise<ArrayBuffer> {
 async function fetchDownloadUrl(key: string): Promise<any> {
   const response = await fetch(`${baseUrl}/download-url/${key}`);
   if (response.status !== 200) {
-    throw new Error(`could not fetch download URL (status ${response.status}).`);
+    throw new Error(`could not fetch download URL (status ${response.status})`);
   }
   return await response.json();
 }
