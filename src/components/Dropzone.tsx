@@ -12,7 +12,7 @@ const dropzoneOptions = {
   multiple: false,
   maxFiles: 1,
   minSize: 67,
-  maxSize: 5_242_880,
+  maxSize: 1_048_576,
 };
 
 export function Dropzone(props: DropzoneProps) {
