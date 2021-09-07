@@ -64,6 +64,14 @@ h1 {
   padding-top: 0;
 }
 
+.footer {
+  text-align: center;
+  font-size: 60%;
+  font-family: monospace;
+  margin-top: 1em;
+  color: #aaa;
+}
+
 .hidden {
   display: none;
 }

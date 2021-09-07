@@ -20,7 +20,8 @@
     "build": "react-scripts build",
     "lint": "eslint .",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "git-info": "echo \"{\\\"commit\\\": \\\"$(git rev-parse --short HEAD)\\\"}\" > src/git-info.json"
   },
   "eslintConfig": {
     "extends": [

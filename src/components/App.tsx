@@ -8,6 +8,7 @@ import {Help} from './Help';
 import {Error} from './Error';
 import {uploadImage} from '../application/upload';
 import {downloadImage} from '../application/download';
+import {Footer} from './Footer';
 
 type AppProps = {
   state: OptimizationState,
@@ -48,6 +49,7 @@ export function App(props: AppProps) {
       </Dropzone>
       <Result hidden={state !== OptimizationState.Success} {...result} />
       <Error hidden={state !== OptimizationState.Failure}>{error}</Error>
+      <Footer />
     </>
   );
 }
