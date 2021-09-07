@@ -16,8 +16,9 @@ export function Result(props: ResultProps) {
           <p id="help-text">Click here to download</p>
         </div>
       </a>
-      <p>Size reduced {originalSize}B → {optimizedSize}B ({(optimizedSize / originalSize * 100).toFixed(1)}% of
-        original).</p>
+      <p>
+        Size reduced {originalSize.toLocaleString('en-US')} → {optimizedSize.toLocaleString('en-US')} bytes ({(optimizedSize / originalSize * 100).toFixed(1)}% of original).
+      </p>
     </div>
   );
 }

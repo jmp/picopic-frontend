@@ -11,8 +11,8 @@ describe('Result', () => {
   });
 
   it('renders statistics', () => {
-    render(<Result downloadUrl="/" originalSize={512} optimizedSize={386} />);
-    const name = screen.getByText("Size reduced 512B → 386B (75.4% of original).");
+    render(<Result downloadUrl="/" originalSize={52_969} optimizedSize={17_137} />);
+    const name = screen.getByText("Size reduced 52,969 → 17,137 bytes (32.4% of original).");
     expect(name).toBeInTheDocument();
   });
 });
