@@ -77,7 +77,7 @@ describe('App', () => {
     Object.defineProperty(input, 'files', {value: [image]});
     fireEvent.change(input);
     await waitFor(() => expect(
-      screen.getByText("Size reduced 512B → 256B (50.0% of original).")
+      screen.getByText("Size reduced 512 → 256 bytes (50.0% of original).")
     ).toBeVisible());
   });
 
