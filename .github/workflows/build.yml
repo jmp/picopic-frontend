@@ -13,12 +13,12 @@ jobs:
     - uses: actions/checkout@v2
     - run: npm ci
     - run: npm run lint
-    - run: npm run git-info
-    - run: npm run build
     - run: npm test -- --coverage
     - uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    - run: npm run git-info
+    - run: npm run build
     - run: aws s3 sync build "s3://${{ secrets.S3_BUCKET_NAME }}" --delete
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
