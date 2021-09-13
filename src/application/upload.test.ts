@@ -13,7 +13,7 @@ describe('uploadImage', () => {
   const uploadParams = {
     url: 'this-does-not-exist',
     fields: {
-      'key': '00000000000000000000000000000000',
+      'key': 'tLW15ilCV4RBceRmDcF4be1CPPgRXG0-qFzZ71MjlL0',
       'x-amz-algorithm':'AWS4-HMAC-SHA256',
       'x-amz-credential':'dummy/20210820/eu-north-1/s3/aws4_request',
       'x-amz-date':'20210820T131552Z',
@@ -25,7 +25,7 @@ describe('uploadImage', () => {
   it('uploads the given image', async () => {
     const dummyImage = new ArrayBuffer(100);
     const uploadUrl = 'http://localhost/fake-upload-url';
-    const expectedKey = '4bc24fffb27c4a34830959f7bb5024d9';
+    const expectedKey = 'si_5A5JEr8PbAlvknkTDWx4YaDh-wYoa0dtG5MIMfs4';
     let wasApiReached = false;
     let wasUploadUrlReached = false;
     server.use(
@@ -64,7 +64,7 @@ describe('uploadImage', () => {
   it('throws an error if uploading the image fails', async () => {
     const dummyImage = new ArrayBuffer(100);
     const uploadUrl = 'http://localhost/fake-upload-url';
-    const expectedKey = '37c562bc03614ba7948bba788c9fccd9';
+    const expectedKey = '6d6tg759lQags4K52n-48a_u6m9Weyrv0pT_HRewHQ8';
     let wasApiReached = false;
     let wasUploadUrlReached = false;
     server.use(

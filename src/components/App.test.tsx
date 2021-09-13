@@ -59,7 +59,7 @@ describe('App', () => {
   });
 
   it('optimizes the chosen image', async () => {
-    const expectedKey = '570084b01d3a49baa1e39b61fd5690d3';
+    const expectedKey = 'x6j6qFNQKw97WZa3HJGeM_4ow23oawyU47bF6VK_qaY';
     const expectedImageData = new ArrayBuffer(512);
     const optimizedImageData = new ArrayBuffer(256);
     const image = new File([expectedImageData], 'tmp.png', {type: 'image/png' });

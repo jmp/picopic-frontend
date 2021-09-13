@@ -13,7 +13,7 @@ describe('Optimizer', () => {
   });
 
   it('optimize resolves the promise on success', async () => {
-    const imageKey = '15344c86946b45d0ad6d4ed78c9aafa7';
+    const imageKey = 'UelK4FsewVeqT3PjfqvWLmENR_X0L5p_BMrjaWOHX9Y';
     const originalImage = new ArrayBuffer(256);
     const optimizedImage = new ArrayBuffer(128);
     const imageToOptimize = new File([originalImage], 'tmp.png');
