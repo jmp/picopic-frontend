@@ -45,7 +45,7 @@ export function App(props: AppProps) {
       <Header title="Picopic!" />
       <Loader hidden={state !== OptimizationState.Loading} />
       <Dropzone hidden={state === OptimizationState.Loading} onDrop={onDrop}>
-        <Help>Drag &amp; drop an image file here to shrink it.</Help>
+        <Help>Select an image file to shrink it</Help>
       </Dropzone>
       <Result hidden={state !== OptimizationState.Success} {...result} />
       <Error hidden={state !== OptimizationState.Failure}>{error}</Error>

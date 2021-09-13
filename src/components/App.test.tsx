@@ -28,13 +28,13 @@ describe('App', () => {
 
   it('shows a help text when not loading', () => {
     render(<App state={OptimizationState.Ready} />);
-    const text = screen.getByText(/drag & drop an image file here to shrink it/i);
+    const text = screen.getByText(/select an image file to shrink it/i);
     expect(text).toBeVisible();
   });
 
   it('does not show a help text when loading', () => {
     render(<App state={OptimizationState.Loading} />);
-    const text = screen.getByText(/drag & drop an image file here to shrink it/i);
+    const text = screen.getByText(/select an image file to shrink it/i);
     expect(text).not.toBeVisible();
   });
 
