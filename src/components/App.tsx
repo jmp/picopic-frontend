@@ -24,9 +24,9 @@ export enum OptimizationState {
 }
 
 export function App(props: AppProps) {
-  const [error, setError] = useState(null);
-  const [state, setState] = useState(props.state);
-  const [result, setResult] = useState(props.result);
+  const [error, setError] = useState<string>('');
+  const [state, setState] = useState<OptimizationState>(props.state);
+  const [result, setResult] = useState<OptimizationResult>(props.result);
   const onDrop = useCallback((files: File[]) => {
     setState(OptimizationState.Loading);
     files.forEach(async (file: File) => {
@@ -39,6 +39,10 @@ export function App(props: AppProps) {
         setError(e.message);
       }
     });
+    if (files.length === 0) {
+      setState(OptimizationState.Failure);
+      setError('Please select a PNG file smaller than 1 MB.');
+    }
   }, [props.optimizer]);
   return (
     <>

@@ -93,4 +93,17 @@ describe('App', () => {
     fireEvent.change(input);
     await waitFor(() => expect(screen.getByText(expectedError)).toBeVisible());
   });
+
+  it('shows an error if no compatible images were selected', async () => {
+    const expectedError = 'Please select a PNG file smaller than 1 MB.';
+    const image = new File([new ArrayBuffer(1_048_577)], 'tmp.png', {type: 'image/png' });
+    const uploadImage = async () => { throw new Error(); };
+    const downloadImage = async () => { throw new Error(); };
+    const optimizer = new Optimizer(uploadImage, downloadImage);
+    render(<App optimizer={optimizer} />);
+    const input = screen.getByAltText(/file/i);
+    Object.defineProperty(input, 'files', {value: [image]});
+    fireEvent.change(input);
+    await waitFor(() => expect(screen.getByText(expectedError)).toBeVisible());
+  });
 });
