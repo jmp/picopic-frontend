@@ -15,14 +15,26 @@ jobs:
       - run: npm ci
       - run: npm run lint
   test:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - run: npm ci
-        - run: npm test -- --coverage
-        - uses: codecov/codecov-action@v2
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm test -- --coverage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/coverage-final.json
+  upload-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
   build:
     runs-on: ubuntu-latest
     steps:
