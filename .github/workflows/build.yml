@@ -23,14 +23,24 @@ jobs:
         - uses: codecov/codecov-action@v2
           with:
             token: ${{ secrets.CODECOV_TOKEN }}
-  deploy:
-    needs: [lint, test]
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: npm ci
       - run: npm run git-info
       - run: npm run build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: build
+  deploy:
+    needs: [lint, test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: app
       - run: |
           CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${{ secrets.S3_BUCKET_NAME }}')].Id" --output text)
           aws s3 sync build "s3://${{ secrets.S3_BUCKET_NAME }}" --delete --size-only
