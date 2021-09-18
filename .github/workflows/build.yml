@@ -9,12 +9,14 @@ on:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: npm ci
       - run: npm run lint
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +27,7 @@ jobs:
           name: coverage
           path: coverage/coverage-final.json
   upload-coverage:
+    name: Upload coverage
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +39,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,6 +51,7 @@ jobs:
           name: app
           path: build
   deploy:
+    name: Deploy
     needs: [lint, test, build]
     runs-on: ubuntu-latest
     steps:
@@ -62,7 +67,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
   trigger-e2e-tests:
-    needs: [deploy]
+    name: Trigger end-to-end tests
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - run: |
